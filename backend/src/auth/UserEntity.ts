@@ -1,27 +1,30 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { Memo } from "../memos/memoEntity";
 
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn()
-    id: number
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    name: string
+  @Column()
+  name: string;
 
-    @Column()
-    lastname: string
+  @Column()
+  lastname: string;
 
-    @Column({unique:true})
-    email: string;
+  @Column({ unique: true })
+  email: string;
 
-    @Column()
-    password:string;
+  @Column()
+  password: string;
 
-    
+  @Column()
+  birthday: string;
 
-    @Column()
-    birthday:string;
+  @Column()
+  phone: string;
 
-    @Column()
-    phone:string;
+  @OneToMany(() => Memo, memo => memo.user)
+  memos: Memo[];
 }
+

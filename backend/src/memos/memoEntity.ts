@@ -1,5 +1,5 @@
-// src/memos/entities/memo.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { User } from '../auth/UserEntity';
 
 @Entity()
 export class Memo {
@@ -9,15 +9,19 @@ export class Memo {
   @Column()
   date: string;
 
-  @Column('jsonb')
+  @Column('jsonb', { nullable: true })
   schedule: Record<string, string>;
 
-  @Column('text', { array: true })
+  @Column('text', { array: true, nullable: true })
   priorities: string[];
 
-  @Column('text', { array: true })
+  @Column('text', { array: true, nullable: true })
   todos: string[];
 
-  @Column('text')
+  @Column('text', { nullable: true })
   notes: string;
+
+  @ManyToOne(() => User, user => user.memos, { onDelete: 'CASCADE' })
+  user: User;
 }
+

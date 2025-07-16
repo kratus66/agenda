@@ -8,9 +8,10 @@ import { MemosController } from './memos/memos.controller';
 
 
 @Module({
-  imports: [AuthModule, 
+  imports: [
     ConfigModule.forRoot({isGlobal:true}),
     TypeOrmModule.forRoot(typeOrmConfig),
+    AuthModule, 
     MemosModule
   ],
   controllers: [],

@@ -1,30 +1,43 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { User } from './UserEntity';
 import { UserDto } from './User.dto';
 import { LoginDto } from './LoginDto';
-
+import { ClerkLoginDto } from './clerk-login.dto';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
-    constructor( private authservice : AuthService ){}
+  constructor(private readonly authService: AuthService) {}
 
-    @Get()
-    async ObtenerUsuario():Promise<User[]>{
-        const users= await this.authservice.getUsers();
-        return users;
-    }
-    @Post('register')
-    async createUser(@Body() dto:UserDto):Promise<string>{
-        const res= await this.authservice.createUser(dto);
-        return "usuario creado con exito"
-    }
+  @Post('register')
+  async register(@Body() dto: UserDto) {
+    return await this.authService.createUser(dto);
+  }
 
-    @Post('login')
-    async login(@Body() login:LoginDto ){
-        const res= await this.authservice.login(login);
-        return res;
-    }
+  @Post('login')
+  async login(@Body() loginDto: LoginDto) {
+    return await this.authService.login(loginDto);
+  }
 
+  @Post('clerk-login')
+  async clerkLogin(@Body() dto: ClerkLoginDto) {
+    return await this.authService.syncClerkUser(dto.token);
+  }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(@Request() req) {
+    return req.user;
+  }
 }
+
+
+
+

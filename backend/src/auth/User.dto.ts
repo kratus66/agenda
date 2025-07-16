@@ -1,32 +1,36 @@
-import { IsEmail, IsNotEmpty, IsString, Matches } from "class-validator";
+// src/auth/User.dto.ts
 
-export class UserDto{
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 
-    @IsString()
-    @IsNotEmpty()
-    name:string;
+export class UserDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
 
-    @IsString()
-    @IsNotEmpty()
-    lastname:string;
+  @IsString()
+  @IsNotEmpty()
+  lastname: string;
 
-    @IsString()
-    @IsEmail()
-    email:string;
+  @IsEmail()
+  email: string;
 
-    @IsString()
-    @IsNotEmpty()
-    password:string;
+  @IsString()
+  @MinLength(6)
+  password: string;
 
-    @IsString()
-    @IsNotEmpty()
-    confirmPassword:string;
+  @IsString()
+  @IsOptional()
+  birthday?: string;
 
-    @IsNotEmpty()
-    birthday:string;
-
-    @IsNotEmpty()
-    phone:string;
-
-
+  @IsString()
+  @IsOptional()
+  phone?: string;
 }
+
+
