@@ -1,6 +1,5 @@
 import {
   IsArray,
-  IsNotEmpty,
   IsOptional,
   IsString,
   IsDateString,
@@ -12,24 +11,24 @@ import {
 import { Type } from 'class-transformer';
 
 class RecordatorioDto {
-
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  title: string;
-
-  @IsNotEmpty()
-  @IsString()
-  mensaje: string;
+  mensaje?: string;
 
   @IsDate()
   @Type(() => Date)
   horaProgramada: Date;
 }
 
-export class CreateMemoDto {
-  @IsNotEmpty()
+export class UpdateMemoDto {
+
+    @IsOptional()
+  @IsString()
+  title?: string;
+
+  @IsOptional()
   @IsDateString()
-  date: string;
+  date?: string;
 
   @IsOptional()
   @IsObject()

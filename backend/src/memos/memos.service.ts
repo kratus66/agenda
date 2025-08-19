@@ -1,9 +1,9 @@
-// src/memos/memos.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Memo } from './memoEntity';
 import { CreateMemoDto } from './cretateMemoDto';
+import { UpdateMemoDto } from './updateMemoDto'; // Asegúrate de tener este archivo
 
 @Injectable()
 export class MemosService {
@@ -35,12 +35,24 @@ export class MemosService {
     return memo;
   }
 
-  async update(id: string, userId: string, updateMemoDto: Partial<Memo>) {
+  async update(id: string, userId: string, updateMemoDto: UpdateMemoDto) {
     const memo = await this.memoRepository.findOne({
       where: { id, user: { id: Number(userId) } },
     });
     if (!memo) throw new NotFoundException('Memo no encontrado');
-    Object.assign(memo, updateMemoDto);
+
+    // Validación para transformar horaProgramada a Date si viene como string
+    let dataToUpdate = { ...updateMemoDto };
+
+    if (updateMemoDto.recordatorio?.horaProgramada) {
+   dataToUpdate.recordatorio = {
+    ...updateMemoDto.recordatorio,
+    horaProgramada: new Date(updateMemoDto.recordatorio.horaProgramada),
+  };
+}
+
+Object.assign(memo, dataToUpdate);
+
     return this.memoRepository.save(memo);
   }
 
@@ -53,3 +65,5 @@ export class MemosService {
     return { message: 'Memo eliminado correctamente' };
   }
 }
+
+

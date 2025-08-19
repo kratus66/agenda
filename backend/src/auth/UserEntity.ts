@@ -1,5 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { Memo } from "../memos/memoEntity";
+import { Alert } from "src/alerts/alert.entity";
+
 
 @Entity()
 export class User {
@@ -26,5 +28,8 @@ export class User {
 
   @OneToMany(() => Memo, memo => memo.user)
   memos: Memo[];
+
+  @OneToMany(() => Alert, alert => alert.user)
+  alertas: Alert[];
 }
 

@@ -18,8 +18,10 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() dto: UserDto) {
-    return await this.authService.createUser(dto);
-  }
+  const token = await this.authService.createUser(dto);
+  return { access_token: token };
+}
+
 
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
@@ -33,8 +35,9 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
+  async getProfile(@Request() req) {
+    return await this.authService.findUserById(req.user.sub);
+    
   }
 }
 

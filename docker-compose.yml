@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: agenda
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+    depends_on:
+      - postgres
+    ports:
+      - "3001:3001"  # Exponemos el backend en su puerto real
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/agenda
+      JWT_SECRET: Diego123*
+      PORT: 3001
+      CLERK_SECRET_KEY: sk_test_8fUPNy2SLI6cBMo9ot0snvicXrS2eax8xS6ajHHZac
+    command: npm run start:prod
+
+  frontend:
+    build:
+      context: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_BACKEND_URL: http://backend:3001
+    command: npm run start
+
+volumes:
+  pgdata:

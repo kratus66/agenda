@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { MemosModule } from './memos/memo.module';
 import { MemosController } from './memos/memos.controller';
+import { AlertModule } from './alerts/alert.module';
 
 
 @Module({
@@ -12,7 +13,8 @@ import { MemosController } from './memos/memos.controller';
     ConfigModule.forRoot({isGlobal:true}),
     TypeOrmModule.forRoot(typeOrmConfig),
     AuthModule, 
-    MemosModule
+    MemosModule, 
+    AlertModule
   ],
   controllers: [],
   providers: [],

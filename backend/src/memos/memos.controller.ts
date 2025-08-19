@@ -1,4 +1,3 @@
-// src/memos/memos.controller.ts
 import {
   Body,
   Post,
@@ -14,9 +13,10 @@ import { MemosService } from './memos.service';
 import { CreateMemoDto } from './cretateMemoDto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Memo } from './memoEntity';
-import { Request } from 'express'; // asegúrate de tener express tipado
+import { Request } from 'express';
+import { UpdateMemoDto } from './updateMemoDto'; // Assuming you have an UpdateMemoDto defined for updates
 
-@UseGuards(JwtAuthGuard) // ⬅️ Protege todo el controlador con JWT
+@UseGuards(JwtAuthGuard)
 @Controller('memos')
 export class MemosController {
   constructor(private readonly memosService: MemosService) {}
@@ -42,7 +42,8 @@ export class MemosController {
   @Patch(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateMemoDto: Partial<Memo>,
+    @Body() updateMemoDto: UpdateMemoDto,
+
     @Req() req: Request,
   ) {
     const userId = req.user!.userId;
@@ -55,5 +56,6 @@ export class MemosController {
     return this.memosService.remove(id, userId);
   }
 }
+
 
 

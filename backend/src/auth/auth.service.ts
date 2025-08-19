@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -9,6 +9,7 @@ import axios from 'axios';
 import { User } from './UserEntity';
 import { UserDto } from './User.dto';
 import { LoginDto } from './LoginDto';
+
 
 @Injectable()
 export class AuthService {
@@ -23,20 +24,31 @@ export class AuthService {
     return await this.userRepository.find();
   }
 
-  async createUser(dto: UserDto): Promise<{ access_token: string }> {
+  async createUser(dto: UserDto): Promise<string> {
+    // 1. Hashear la contraseña
     const hashedPassword = await bcrypt.hash(dto.password, 10);
-    const newUser = this.userRepository.create({
+
+    // 2. Crear el usuario con la contraseña encriptada
+    const user = this.userRepository.create({
       ...dto,
       password: hashedPassword,
     });
-    const savedUser = await this.userRepository.save(newUser);
 
-    const token = this.jwtService.sign({
-      sub: savedUser.id,
-      email: savedUser.email,
-    });
+    try {
+      await this.userRepository.save(user);
 
-    return { access_token: token };
+      const token = this.jwtService.sign({
+        sub: user.id,
+        email: user.email,
+      });
+
+      return token;
+    } catch (error: any) {
+      if (error.code === '23505' && error.detail?.includes('(email)')) {
+        throw new ConflictException('El correo ya está registrado.');
+      }
+      throw new InternalServerErrorException('Error al registrar el usuario.');
+    }
   }
 
   async login(login: LoginDto): Promise<{ access_token: string }> {
@@ -88,7 +100,7 @@ export class AuthService {
         user = this.userRepository.create({
           email: email_address,
           name: `${first_name} ${last_name}`,
-          password: '', // opcional: podrías marcar de alguna forma que es auth externa
+          password: '', // podrías registrar un marcador de auth externa
         });
         user = await this.userRepository.save(user);
       }
@@ -104,6 +116,17 @@ export class AuthService {
       throw new UnauthorizedException('No se pudo autenticar con Clerk');
     }
   }
+
+  async findUserById(id: number): Promise<Partial<User>> {
+    const user = await this.userRepository.findOne({ where: { id } });
+
+    if (!user) throw new UnauthorizedException('Usuario no encontrado');
+
+    return {
+      id: user.id,
+      name: user.name,
+      lastname: user.lastname,
+      email: user.email,
+    };
+  }
 }
-
-

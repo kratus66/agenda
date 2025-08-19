@@ -3,6 +3,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule } from "@nestjs/config";
 import { DataSource } from "typeorm";
 import { User } from '../auth/UserEntity';
+import { Alert } from "src/alerts/alert.entity";
 
 
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
@@ -22,7 +23,7 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   synchronize: true,
   dropSchema:false,
   logging: true,
-    entities: [User, Memo],
+    entities: [User, Memo, Alert],
     subscribers: [],
     migrations: [],
 };
